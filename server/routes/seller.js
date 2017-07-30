@@ -19,6 +19,9 @@ router.post('/seller', validations.sellerCreate, loadUser, isAdmin, sellerContro
 /* Signin */
 router.post('/seller/signin', sellerController.signin);
 
+/* Signin */
+router.delete('/signout', sellerController.signout);
+
 /* Accepts contact as params and send OTP to client */
 router.post('/seller/otp/:contact', isServiceAccount, sellerController.sendOTP);
 

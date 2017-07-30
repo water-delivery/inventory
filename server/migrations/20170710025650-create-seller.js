@@ -41,6 +41,11 @@ module.exports = {
       verifiedAt: {
         type: Sequelize.DATE
       },
+      roles: {
+        type: Sequelize.ENUM,
+        values: ['seller', 'admin'],
+        defaultValue: 'seller'
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

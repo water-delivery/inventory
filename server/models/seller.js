@@ -23,6 +23,11 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     verifiedAt: {
       type: DataTypes.DATE
+    },
+    roles: {
+      type: DataTypes.ENUM,
+      values: ['seller', 'admin'],
+      defaultValue: 'seller'
     }
   }, {
     hooks: {

@@ -3,7 +3,11 @@ const AccessToken = require('../models').accessToken;
 const async = require('async');
 const redisService = require('../services').redis;
 const smsService = require('../services').sms;
-const { generateRandomNumber, generateOTPTextMessage } = require('../utils');
+const {
+  generateRandomNumber,
+  generateOTPTextMessage,
+  getToken
+} = require('../utils');
 const {
   CONTACT_NUMBER_VERIFICATION,
   CONTACT_ALREADY_REGISTERED,
@@ -129,6 +133,16 @@ module.exports = {
     });
   },
 
+  signout: (req, res) => {
+    AccessToken.destroy({
+      where: {
+        token: getToken(req)
+      }
+    })
+    .then(res.noContent)
+    .catch(res.serverError);
+  },
+
   /**
    * TODO: This can moved to notifications service once its up
    * Sends a One Time Password (OTP) for validating contact info
@@ -138,26 +152,29 @@ module.exports = {
    */
   sendOTP: (req, res) => {
     const contact = req.params.contact;
-    const action = req.body.action || 'signup';
-    const type = action === 'signup' ? CONTACT_NUMBER_VERIFICATION : ACCOUNT_AUTHENTICATION;
+    let operationType = ACCOUNT_AUTHENTICATION;
+    let operation = 'signin';
     async.waterfall([
       function checkIfContactExists(next) {
-        if (action === 'signin') return next();
+        // if (action === 'signin') return next();
         return Seller.findOne({
           where: {
             contact
           }
         })
         .then(record => {
-          if (!record) return next();
-          return res.status(409).send(CONTACT_ALREADY_REGISTERED);
+          if (!record) {
+            operation = 'signup';
+            operationType = CONTACT_NUMBER_VERIFICATION;
+          }
+          return next();
         })
         .catch(next);
       },
       // Create a redis record
       function LogInRedis(next) {
         redisService.create({
-          type,
+          type: operationType,
           data: generateRandomNumber(),
           token: contact,
         })
@@ -170,11 +187,19 @@ module.exports = {
         if (!value) {
           return res.negotiate();
         }
-
         smsService.send(generateOTPTextMessage(value.data), contact)
         .then(response => next(null, value, response))
         .catch(next);
       }
-    ], (err, result) => res.ok(result));
+    ], (err, result) => {
+      if (err) return res.serverError(err);
+      const { type, data, token } = result;
+      return res.ok({
+        operation,
+        type,
+        data,
+        token
+      });
+    });
   }
 };
