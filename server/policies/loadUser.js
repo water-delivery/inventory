@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
 
   const authServiceReqOptions = {
     method: 'GET',
-    url: `${urls.api}/auth/me`,
+    url: `${urls.api}/auth/v1/user/me`,
     headers: { Authorization: `Bearer ${accessToken}` },
     json: true
   };
@@ -32,7 +32,7 @@ module.exports = (req, res, next) => {
     }
 
     req.options.user = body;
-    req.options.user.type = req.options.user.isAdmin
+    req.options.user.type = req.options.user.roles === 'admin'
      ? constants.USER_ADMIN
      : constants.USER_AUTHENTICATED;
 

@@ -5,20 +5,43 @@ module.exports = {
     return queryInterface.createTable('prices', {
       id: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
       },
-      productId: {
+      sellerProductId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        unique: true,
+        references: {
+          model: 'sellerProduct',
+          key: 'id'
+        },
       },
-      sellerId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      locationId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
+      // productId: {
+      //   type: Sequelize.INTEGER,
+      //   allowNull: false,
+      //   references: {
+      //     model: 'products',
+      //     key: 'id'
+      //   },
+      // },
+      // sellerId: {
+      //   type: Sequelize.INTEGER,
+      //   allowNull: false,
+      //   references: {
+      //     model: 'sellers',
+      //     key: 'id'
+      //   },
+      // },
+      // locationId: {
+      //   type: Sequelize.INTEGER,
+      //   allowNull: false,
+      //   references: {
+      //     model: 'locations',
+      //     key: 'id'
+      //   },
+      // },
       amount: {
         type: Sequelize.INTEGER,
         allowNull: false

@@ -2,6 +2,7 @@ const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const Router = require('./server/routes');
+const responses = require('./server/responses');
 
 // Set up the express app
 const app = express();
@@ -12,6 +13,10 @@ app.use(logger('dev'));
 // Parse incoming requests data (https://github.com/expressjs/body-parser)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+
+// Attaching custom response methods to res object
+app.use(responses);
 
 // Link routes
 Router(app);

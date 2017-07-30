@@ -1,16 +1,15 @@
-const bcrypt = require('bcrypt');
-const config = require('../config');
+// const bcrypt = require('bcrypt');
+// const config = require('../config');
 
-module.exports = function(sequelize, DataTypes) {
-  var Seller;
-  Seller = sequelize.define('seller', {
+module.exports = (sequelize, DataTypes) => {
+  const Seller = sequelize.define('seller', {
     firstName: DataTypes.STRING,
     lastName: DataTypes.STRING,
     avatar: DataTypes.STRING,
     password: {
       type: DataTypes.STRING,
       validate: { min: 6 },
-      allowNull: false
+      // allowNull: false
     },
     contact: {
       type: DataTypes.STRING,
@@ -28,22 +27,22 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     hooks: {
       beforeCreate: (seller, options) => {
-        return Seller.hashPassword(seller.password).then(hashedPw => {
-          seller.password = hashedPw;
-        });
+        // return Seller.hashPassword(seller.password).then(hashedPw => {
+        //   seller.password = hashedPw;
+        // });
       },
       beforeUpdate: (seller, options) => {
-        if (!seller.password) return;
-        return Seller.hashPassword(seller, (err, hash) => {
-          seller.password = hash;
-        });
+        // if (!seller.password) return;
+        // return Seller.hashPassword(seller, (err, hash) => {
+        //   seller.password = hash;
+        // });
       },
       afterCreate: () => {
         // Do stuff like logging, sending notifications or emails
       }
     },
     getterMethods: {
-      fullName: function () {
+      fullName: () => {
         return this.getDataValue('firstName') + ' ' + this.getDataValue('lastName');
       }
     }
@@ -65,11 +64,16 @@ module.exports = function(sequelize, DataTypes) {
       as: 'products'
     });
 
+    Seller.belongsToMany(models.location, {
+      through: 'sellerProduct'
+    });
+
     Seller.hasMany(models.orderItem, {
       as: 'orderItems'
     });
   };
 
+  /*
   Seller.validatePassword = (password, hash) => {
     return new Promise((resolve, reject) =>
       bcrypt.compare(
@@ -88,5 +92,6 @@ module.exports = function(sequelize, DataTypes) {
         .catch(err => reject())
     );
   };
+  */
   return Seller;
 };

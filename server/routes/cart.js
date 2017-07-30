@@ -11,7 +11,7 @@ const cartController = require('../controllers/cart');
 router.post('/cart', validations.addToCart, loadUser, isAuthenticated, cartController.create);
 
 /* find user cart */
-router.post('/cart/user/:userId', cartController.find);
+router.get('/cart/user/:userId', cartController.findOne);
 
 /* */
 router.delete('/cart/user/:userId/product/:product',

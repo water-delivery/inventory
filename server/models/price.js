@@ -1,18 +1,19 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
-  var order = sequelize.define('price', {
-    productId: {
+  var Price = sequelize.define('price', {
+    sellerProductId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      unique: true
     },
-    sellerId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    locationId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
+    // sellerId: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    // },
+    // locationId: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    // },
     amount: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -29,5 +30,10 @@ module.exports = function(sequelize, DataTypes) {
       }
     }
   });
-  return order;
+
+  Price.associate = (models) => {
+    // Price.belongsTo(models.sellerProduct);
+    Price.belongsTo(models.sellerProduct, { as: 'sellerProduct' });
+  };
+  return Price;
 };

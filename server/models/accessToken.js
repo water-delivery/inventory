@@ -1,7 +1,7 @@
 const { generateUUID } = require('../utils');
 
-module.exports = function(sequelize, DataTypes) {
-  var AccessToken = sequelize.define('accessToken', {
+module.exports = (sequelize, DataTypes) => {
+  const AccessToken = sequelize.define('accessToken', {
     token: {
       type: DataTypes.STRING,
       unique: true,

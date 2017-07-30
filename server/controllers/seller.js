@@ -1,22 +1,24 @@
 const Seller = require('../models').seller;
 const AccessToken = require('../models').accessToken;
 const async = require('async');
-
-const validations = {
-  SELLER_NOT_FOUND: {
-    message: 'User not found in the database'
-  },
-  PASSWORD_NOT_MATCHED: {
-    message: 'Password didn\'t match with the given username'
-  }
-}
+const redisService = require('../services').redis;
+const smsService = require('../services').sms;
+const { generateRandomNumber, generateOTPTextMessage } = require('../utils');
+const {
+  CONTACT_NUMBER_VERIFICATION,
+  CONTACT_ALREADY_REGISTERED,
+  ACCOUNT_AUTHENTICATION,
+  SELLER_NOT_FOUND,
+  // PASSWORD_NOT_MATCHED,
+  INVALID_OTP,
+  OTP_MISMATCH
+} = require('../constants');
 
 module.exports = {
   create: (req, res) => {
-    const { firstName, lastName, password, contact, contactSecondary, description, email } = req.body;
+    const { firstName, lastName, password, contact, description, email } = req.body;
     // All validations should be done by now!
     // TODO: Get other possible information from the device he is logging in!
-    console.log(req.body);
     const sellerObject = {
       firstName,
       lastName,
@@ -32,7 +34,7 @@ module.exports = {
           if (!record) {
             return next({
               message: 'Creation of seller failed'
-            })
+            });
           }
           return next(null, {
             firstName: record.firstName,
@@ -43,8 +45,8 @@ module.exports = {
             email: record.email
           });
         })
-        // .catch(next);
-        .catch(console.log);
+        .catch(next);
+        // .catch(console.log);
       },
     ], function final(error, user) {
       if (error) {
@@ -67,52 +69,112 @@ module.exports = {
     });
   },
 
-  signin: function (req, res) {
+  signin: (req, res) => {
     // All validations should be done by now!
-    const { contact, password, meta } = req.body;
+    const { contact, otp, meta } = req.body;
     return async.waterfall([
       function findSeller(next) {
         Seller.findOne({ where: { contact } })
         .then(seller => {
-          if (!seller) return res.status(404).send(validations.SELLER_NOT_FOUND);
+          if (!seller) return res.notFound(SELLER_NOT_FOUND);
           return next(null, seller);
         })
-        .catch(console.log);
+        .catch(next);
       },
-      function validatePassword(seller, next) {
-        return Seller.validatePassword(password, seller.password)
-          .then(isValid => {
-            if (isValid) return next(null, seller);
-            return res.status(401).send(validations.PASSWORD_NOT_MATCHED);
-          })
-          .catch(next);
+      // function validatePassword(seller, next) {
+      //   return Seller.validatePassword(password, seller.password)
+      //     .then(isValid => {
+      //       if (isValid) return next(null, seller);
+      //       return res.status(401).send(PASSWORD_NOT_MATCHED);
+      //     })
+      //     .catch(next);
+      // },
+      function validateOTP(user, next) {
+        const criteria = {
+          type: ACCOUNT_AUTHENTICATION,
+          token: contact
+        };
+        return redisService.findOne(criteria)
+        .then(value => {
+          if (!value) return next(INVALID_OTP);
+          if (parseInt(value.data, 10) !== otp) return next(OTP_MISMATCH);
+          // Dont wait for this response
+          redisService.destroy(criteria);
+          return next(null, user);
+        })
+        .catch(next);
       },
       function generateToken(seller, next) {
         return AccessToken.create({
           sellerId: seller.id,
           device: meta && meta.device
         })
-        .then(newRecord => {
-          return next(null, {
-            firstName: seller.firstName,
-            lastName: seller.lastName,
-            avatar: seller.avatar,
-            contact: seller.contact,
-            description: seller.description,
-            email: seller.email,
-            roles: seller.roles,
-            accessToken: newRecord.token
-          });
-        })
-        .catch(console.log);
+        .then(newRecord => next(null, {
+          firstName: seller.firstName,
+          lastName: seller.lastName,
+          avatar: seller.avatar,
+          contact: seller.contact,
+          description: seller.description,
+          email: seller.email,
+          roles: seller.roles,
+          accessToken: newRecord.token
+        }))
+        .catch(next);
       }
     ], (err, seller) => {
       if (err) {
-        return res.status(401).send()
+        return res.unAuthorized(err);
       }
-      return res.status(200).send(seller)
+      return res.ok(seller);
     });
   },
 
+  /**
+   * TODO: This can moved to notifications service once its up
+   * Sends a One Time Password (OTP) for validating contact info
+   * @param  {[type]} req [description]
+   * @param  {[type]} res [description]
+   * @return {[type]}     [description]
+   */
+  sendOTP: (req, res) => {
+    const contact = req.params.contact;
+    const action = req.body.action || 'signup';
+    const type = action === 'signup' ? CONTACT_NUMBER_VERIFICATION : ACCOUNT_AUTHENTICATION;
+    async.waterfall([
+      function checkIfContactExists(next) {
+        if (action === 'signin') return next();
+        return Seller.findOne({
+          where: {
+            contact
+          }
+        })
+        .then(record => {
+          if (!record) return next();
+          return res.status(409).send(CONTACT_ALREADY_REGISTERED);
+        })
+        .catch(next);
+      },
+      // Create a redis record
+      function LogInRedis(next) {
+        redisService.create({
+          type,
+          data: generateRandomNumber(),
+          token: contact,
+        })
+        .then(value => next(null, value))
+        .catch(next);
+      },
+      // send a message to that phone number
+      function SendSMS(value, next) {
+        // if storing in redis fails, bail out
+        if (!value) {
+          return res.negotiate();
+        }
 
-}
+        smsService.send(generateOTPTextMessage(value.data), contact)
+        .then(response => next(null, value, response))
+        .catch(next);
+      }
+    ], (err, result) => res.ok(result));
+  }
+};

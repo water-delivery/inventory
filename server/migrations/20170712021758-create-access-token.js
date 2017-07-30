@@ -20,6 +20,9 @@ module.exports = {
       device: {
         type: Sequelize.STRING
       },
+      location: {
+        type: Sequelize.STRING
+      },
       latitude: {
         type: Sequelize.INTEGER,
         allowNull: true,

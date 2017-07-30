@@ -42,6 +42,8 @@ module.exports = function(sequelize, DataTypes) {
       through: 'sellerProduct',
       as: 'sellers'
     });
+
+    // Product.hasMany(models.price);
   };
   return Product;
 };

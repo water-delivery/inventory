@@ -4,17 +4,14 @@ module.exports = function(sequelize, DataTypes) {
     productId: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: 'uniq_seller_product_location'
     },
     sellerId: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: 'uniq_seller_product_location'
     },
     locationId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: 'uniq_seller_product_location'
     },
     isActive: {
       type: DataTypes.BOOLEAN,
@@ -22,11 +19,14 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     }
   }, {
-    classMethods: {
-      associate: function(models) {
-        // associations can be defined here
-      }
-    }
+    freezeTableName: true
   });
+
+  SellerProduct.associate = (models) => {
+    SellerProduct.belongsTo(models.product);
+    SellerProduct.belongsTo(models.seller);
+    SellerProduct.belongsTo(models.location);
+  };
+
   return SellerProduct;
 };

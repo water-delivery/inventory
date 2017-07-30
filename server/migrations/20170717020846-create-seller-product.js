@@ -2,25 +2,36 @@
 
 module.exports = {
   up: function (queryInterface, Sequelize) {
-    return queryInterface.createTable('sellerProduct', {
+    const sellerProduct = {
       id: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
       },
       productId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        unique: 'uniq_seller_product_location'
+        references: {
+          model: 'products',
+          key: 'id'
+        },
       },
       sellerId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        unique: 'uniq_seller_product_location'
+        references: {
+          model: 'sellers',
+          key: 'id'
+        },
       },
       locationId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        unique: 'uniq_seller_product_location'
+        references: {
+          model: 'locations',
+          key: 'id'
+        },
       },
       isActive: {
         type: Sequelize.BOOLEAN,
@@ -35,8 +46,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
-    });
+    };
 
+    return queryInterface.createTable('sellerProduct', sellerProduct);
   },
 
   down: function (queryInterface, Sequelize) {

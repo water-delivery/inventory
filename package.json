@@ -11,18 +11,24 @@
   },
   "dependencies": {
     "async": "^2.5.0",
-    "bcrypt": "^1.0.2",
     "body-parser": "^1.17.2",
     "crypto": "^0.0.3",
     "express": "^4.15.3",
     "morgan": "^1.8.2",
+    "nconf": "^0.8.4",
     "pg": "^6.4.0",
     "pg-hstore": "^2.3.2",
+    "plivo": "^0.4.1",
+    "redis": "^2.7.1",
+    "request": "^2.81.0",
     "sequelize": "^4.3.0"
   },
   "devDependencies": {
-    "eslint": "^3.18.0",
-    "eslint-config-airbnb": "^14.1.0",
-    "eslint-plugin-import": "^2.2.0"
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-loader": "^1.8.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.0.1",
+    "eslint-plugin-react": "^7.1.0"
   }
 }

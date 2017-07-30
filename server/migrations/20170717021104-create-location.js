@@ -5,7 +5,9 @@ module.exports = {
     return queryInterface.createTable('locations', {
       id: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
       },
       name: {
         type: Sequelize.STRING,
