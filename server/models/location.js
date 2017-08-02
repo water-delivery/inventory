@@ -25,9 +25,9 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Location.associate = (models) => {
-    Location.belongsToMany(models.seller, {
-      through: 'sellerProduct'
-    });
+    // Location.belongsToMany(models.seller, {
+    //   through: 'sellerProduct'
+    // });
   };
   return Location;
 };

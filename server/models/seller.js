@@ -60,9 +60,9 @@ module.exports = (sequelize, DataTypes) => {
       as: 'tokens'
     });
 
-    Seller.hasMany(models.location, {
-      as: 'locations'
-    });
+    // Seller.hasMany(models.location, {
+    //   as: 'locations'
+    // });
 
     Seller.belongsToMany(models.product, {
       through: 'sellerProduct',
