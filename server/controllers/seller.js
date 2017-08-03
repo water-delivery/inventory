@@ -76,6 +76,10 @@ module.exports = {
   signin: (req, res) => {
     // All validations should be done by now!
     const { contact, otp, meta } = req.body;
+    const criteria = {
+      type: ACCOUNT_AUTHENTICATION,
+      token: contact
+    };
     return async.waterfall([
       function findSeller(next) {
         Seller.findOne({ where: { contact } })
@@ -94,16 +98,10 @@ module.exports = {
       //     .catch(next);
       // },
       function validateOTP(user, next) {
-        const criteria = {
-          type: ACCOUNT_AUTHENTICATION,
-          token: contact
-        };
         return redisService.findOne(criteria)
         .then(value => {
           if (!value) return next(INVALID_OTP);
           if (parseInt(value.data, 10) !== otp) return next(OTP_MISMATCH);
-          // Dont wait for this response
-          redisService.destroy(criteria);
           return next(null, user);
         })
         .catch(next);
@@ -129,6 +127,8 @@ module.exports = {
       if (err) {
         return res.unAuthorized(err);
       }
+      // Dont wait for this response
+      redisService.destroy(criteria);
       return res.ok(seller);
     });
   },

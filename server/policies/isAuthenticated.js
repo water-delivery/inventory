@@ -1,7 +1,16 @@
-const constants = require('../constants');
-module.exports = function (req, res, next) {
+const {
+  USER_AUTHENTICATED,
+  USER_ADMIN,
+  AUTHENTICATION_NEEDED
+} = require('../constants');
 
-  if (req.options && req.options.user.type === constants.USER_AUTHENTICATED) return next();
+module.exports = (req, res, next) => {
+  const authenticatedRoles = [
+    USER_AUTHENTICATED,
+    USER_ADMIN
+  ];
 
-  return res.status(401).send(constants.AUTHENTICATION_NEEDED);
-}
+  if (req.options && authenticatedRoles.includes(req.options.user.type)) return next();
+
+  return res.status(401).send(AUTHENTICATION_NEEDED);
+};

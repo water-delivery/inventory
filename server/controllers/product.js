@@ -37,7 +37,7 @@ module.exports = {
   findOne: (req, res) => {
     return res.status(200).send({
       message: 'Hello, World!!'
-    })
+    });
   },
   create: (req, res) => {
     const { name, avatar, description, capacity, meta, address } = req.body || {};

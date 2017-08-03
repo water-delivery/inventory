@@ -20,8 +20,8 @@ module.exports = (req, res, next) => {
   })
   .then(record => {
     if (!record) res.unAuthorized(constants.ACCESS_TOKEN_INVALID);
-    req.options.user = record.user;
-    req.options.user.type = record.user.roles === 'admin'
+    req.options.user = record.seller;
+    req.options.user.type = record.seller.roles === 'admin'
      ? constants.USER_ADMIN
      : constants.USER_AUTHENTICATED;
     next();

@@ -1,10 +1,12 @@
 const Price = require('../models').price;
 const SellerProduct = require('../models').sellerProduct;
-validations = {
+
+const validations = {
   PRODUCT_NOT_FOUND: {
     message: 'Product not found for this seller in this location'
   }
-}
+};
+
 module.exports = {
   /**
    * Seller should be able to add an existing product to his catalog
@@ -38,7 +40,7 @@ module.exports = {
     }
     const sellerProductId = req.options.sellerProduct.id;
     const { amount } = req.body;
-    Price.create({
+    return Price.create({
       sellerProductId,
       amount
     })
@@ -54,7 +56,7 @@ module.exports = {
     const sellerProductId = req.options.sellerProduct.id;
     const { amount } = req.body;
 
-    Price.update({
+    return Price.update({
       amount
     }, {
       where: { sellerProductId },
@@ -64,5 +66,4 @@ module.exports = {
     .then(([affectedCount, affectedRows]) => res.created(affectedRows))
     .catch(res.negotiate);
   }
-
-}
+};
