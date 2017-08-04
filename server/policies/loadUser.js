@@ -1,30 +1,44 @@
+const request = require('request');
 const constants = require('../constants');
 const { getToken } = require('../utils');
-const AccessToken = require('../models').accessToken;
-const Seller = require('../models').seller;
+const urls = require('../config').urls;
 
 module.exports = (req, res, next) => {
   req.options = req.options || {};
-  const token = getToken(req);
-  if (!token) {
-    return res.unAuthorized(constants.ACCESS_TOKEN_NOT_FOUND);
-  }
 
-  return AccessToken.findOne({
-    where: { token },
-    include: [{
-      model: Seller,
-      required: true,
-      attributes: ['firstName', 'lastName', 'avatar', 'contact', 'description', 'email', 'roles']
-    }]
-  })
-  .then(record => {
-    if (!record) res.unAuthorized(constants.ACCESS_TOKEN_INVALID);
-    req.options.user = record.seller;
-    req.options.user.type = record.seller.roles === 'admin'
-     ? constants.USER_ADMIN
-     : constants.USER_AUTHENTICATED;
-    next();
-  })
-  .catch(next);
+  // start with setting user to UNAUTHENTICATED
+  req.options.user = { type: constants.USER_UNAUTHENTICATED };
+
+  const accessToken = getToken(req);
+  // no accessToken and not a service account
+  // go forward as UNAUTHENTICATED user
+  if (!accessToken) return next();
+
+  const authServiceReqOptions = {
+    method: 'GET',
+    url: `${urls.api}/auth/v1/user/me`,
+    headers: { Authorization: `Bearer ${accessToken}` },
+    json: true
+  };
+
+  return request(authServiceReqOptions, (err, response, body) => {
+    const errorMessage = err || (response && response.body);
+    const statusCode = (response && response.statusCode) || 500;
+
+    if (err || statusCode !== 200) {
+      return res
+        .status(statusCode)
+        .json(errorMessage || { message: 'Request to authenticate user failed' });
+    }
+
+    if (!body) {
+      return res.unAuthorized();
+    }
+
+    req.options.user = body;
+    req.options.user.type = body.roles === 'admin'
+      ? constants.USER_ADMIN
+      : constants.USER_AUTHENTICATED;
+    return next();
+  });
 };

@@ -44,6 +44,8 @@ module.exports = function(sequelize, DataTypes) {
     });
 
     // Product.hasMany(models.price);
+
+    Product.hasMany(models.review);
   };
   return Product;
 };

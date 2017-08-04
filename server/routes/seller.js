@@ -2,9 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 const {
-  loadUser,
+  loadSeller,
   isAdmin,
-  isAuthenticated,
+  isSellerAuthenticated,
   loadProduct,
   sellerProduct,
   isServiceAccount,
@@ -14,7 +14,7 @@ const sellerController = require('../controllers/seller');
 const sellerProductController = require('../controllers/sellerProduct');
 
 /* Create user */
-router.post('/seller', validations.sellerCreate, loadUser, isAdmin, sellerController.create);
+router.post('/seller', validations.sellerCreate, loadSeller, isAdmin, sellerController.create);
 
 /* Signin */
 router.post('/seller/signin', sellerController.signin);
@@ -27,24 +27,24 @@ router.post('/seller/otp/:contact', isServiceAccount, sellerController.sendOTP);
 
 /* Add product */
 router.post('/seller/:sellerId/addProduct',
-  loadUser,
-  isAuthenticated,
+  loadSeller,
+  isSellerAuthenticated,
   loadProduct,
   sellerProductController.addProduct
 );
 
 /* Add price to product */
 router.post('/seller/:sellerId/addPrice',
-  loadUser,
-  isAuthenticated,
+  loadSeller,
+  isSellerAuthenticated,
   sellerProduct,
   sellerProductController.addPrice
 );
 
 /* Update price to product */
 router.put('/seller/:sellerId/updatePrice',
-  loadUser,
-  isAuthenticated,
+  loadSeller,
+  isSellerAuthenticated,
   sellerProduct,
   sellerProductController.updatePrice
 );

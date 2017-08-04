@@ -6,9 +6,9 @@ const async = require('async');
 
 module.exports = {
   find: (req, res) => {
-    const offset = parseInt(req.query.skip || 0 , 10);
-    const limit = parseInt(req.query.limit || 20 , 10);
-    const capacity = parseInt(req.query.capacity || 20 , 10);
+    const offset = parseInt(req.query.skip || 0, 10);
+    const limit = parseInt(req.query.limit || 20, 10);
+    const capacity = parseInt(req.query.capacity || 20, 10);
     const locationId = req.query.locationId;
     const criteria = {};
 
@@ -18,15 +18,14 @@ module.exports = {
 
     return sequelize
       .query('SELECT productFilter(:locationId, :limit, :skip); ',
-        {
-          replacements: {
-            locationId: criteria.locationId || null,
-            limit: limit,
-            skip: offset,
-          },
-          type: sequelize.QueryTypes.SELECT
-        }
-      )
+      {
+        replacements: {
+          locationId: criteria.locationId || null,
+          limit,
+          skip: offset,
+        },
+        type: sequelize.QueryTypes.SELECT
+      })
       .then(results => {
         const products = results && results[0] && results[0].productfilter;
         return res.ok(products || []);
@@ -39,6 +38,7 @@ module.exports = {
       message: 'Hello, World!!'
     });
   },
+
   create: (req, res) => {
     const { name, avatar, description, capacity, meta, address } = req.body || {};
     async.waterfall([
@@ -66,16 +66,16 @@ module.exports = {
         message: 'Product added successfully!',
         product
       });
-    })
+    });
   },
   update: (req, res) => {
     return res.status(200).send({
       message: 'Hello, World!!'
-    })
+    });
   },
   delete: (req, res) => {
     return res.status(200).send({
       message: 'Hello, World!!'
-    })
+    });
   },
 }
