@@ -3,6 +3,7 @@ const sellerCreate = require('./sellerCreate');
 const addToCart = require('./addToCart');
 const addReview = require('./addReview');
 const orderCreate = require('./orderCreate');
+const orderCancellation = require('./orderCancellation');
 const productCreate = require('./productCreate');
 const productUpdate = require('./productUpdate');
 const addLocation = require('./addLocation');
@@ -11,6 +12,7 @@ module.exports = {
   addToCart,
   addReview,
   orderCreate,
+  orderCancellation,
   productCreate,
   productUpdate,
   sellerCreate,

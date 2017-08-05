@@ -10,7 +10,7 @@ module.exports = {
         primaryKey: true,
       },
       userId: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull: false,
       },
       status: {
@@ -26,6 +26,24 @@ module.exports = {
       address: {
         type: Sequelize.STRING,
         allowNull: false,
+      },
+      addressLine1: {
+        type: Sequelize.STRING,
+      },
+      addressLine2: {
+        type: Sequelize.STRING,
+      },
+      landmark: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      locationId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'locations',
+          key: 'id'
+        }
       },
       totalPrice: {
         type: Sequelize.INTEGER,
@@ -43,6 +61,12 @@ module.exports = {
       },
       actualDeliveryDate: {
         type: Sequelize.DATE
+      },
+      cancelledAt: {
+        type: Sequelize.DATE
+      },
+      cancelationReason: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

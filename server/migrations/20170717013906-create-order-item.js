@@ -11,15 +11,27 @@ module.exports = {
       },
       sellerId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: 'sellers',
+          key: 'id'
+        }
       },
       productId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: 'products',
+          key: 'id'
+        }
       },
       orderId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: 'orders',
+          key: 'id'
+        }
       },
       status: {
         type: Sequelize.STRING

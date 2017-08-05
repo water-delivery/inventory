@@ -7,8 +7,15 @@ const {
 } = require('../policies');
 const orderController = require('../controllers/order');
 
-/* Create user */
+/* Create order */
 router.post('/order', validations.orderCreate, loadUser, isUserAuthenticated, orderController.create);
 
+/* order cancelation */
+router.put('/order/:id/cancel',
+  validations.orderCancellation,
+  loadUser,
+  isUserAuthenticated,
+  orderController.cancel
+);
 
 module.exports = router;

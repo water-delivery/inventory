@@ -1,6 +1,5 @@
-'use strict';
-module.exports = function(sequelize, DataTypes) {
-  var OrderItem = sequelize.define('orderItem', {
+module.exports = (sequelize, DataTypes) => {
+  const OrderItem = sequelize.define('orderItem', {
     productId: {
       type: DataTypes.INTEGER,
       allowNull: false
@@ -30,6 +29,7 @@ module.exports = function(sequelize, DataTypes) {
 
   OrderItem.associate = (models) => {
     OrderItem.belongsTo(models.order);
-  }
+  };
+
   return OrderItem;
 };

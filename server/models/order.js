@@ -1,8 +1,7 @@
-'use strict';
-module.exports = function(sequelize, DataTypes) {
-  var Order = sequelize.define('order', {
+module.exports = (sequelize, DataTypes) => {
+  const Order = sequelize.define('order', {
     userId: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     status: {
@@ -19,9 +18,29 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    addressLine1: {
+      type: DataTypes.STRING,
+    },
+    addressLine2: {
+      type: DataTypes.STRING,
+    },
+    landmark: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    locationId: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     totalPrice: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    cancelledAt: {
+      type: DataTypes.DATE
+    },
+    cancelationReason: {
+      type: DataTypes.STRING
     },
     paymentMethod: {
       type: DataTypes.ENUM,
@@ -40,7 +59,8 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Order.associate = (models) => {
-    Order.hasMany(models.orderItem);
-  }
+    Order.hasMany(models.orderItem, { as: 'items' });
+  };
+
   return Order;
 };

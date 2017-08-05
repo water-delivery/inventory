@@ -33,5 +33,8 @@ module.exports = {
     const filler = process.env.OTP_TEXT_MESSAGE_FILLER ||
       '  is your OTP for your account verification.';
     return `Hello vendor, ${otp}${filler}`;
-  }
+  },
+
+  isObjectValid: (obj, keys) => keys.every((item) => Object.keys(obj).includes(item))
+
 };

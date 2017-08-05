@@ -11,10 +11,10 @@ const reviewController = require('../controllers/review');
 router.post('/review', validations.addReview, loadUser, isUserAuthenticated, reviewController.create);
 
 /* Get user review */
-router.get('/review', loadUser, isUserAuthenticated, reviewController.findOne);
+router.get('/review/me', loadUser, isUserAuthenticated, reviewController.findOne);
 
 /* Get product reviews */
-router.get('/review/all', reviewController.find);
+router.get('/review', reviewController.find);
 
 /* */
 router.delete('/review/:id',
