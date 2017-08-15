@@ -41,6 +41,7 @@ jobs:
           command: |
             wget https://dl.google.com/dl/cloudsdk/release/install_google_cloud_sdk.bash
             bash ./install_google_cloud_sdk.bash --disable-prompts
+            exec -l $SHELL
             # export PATH="/usr/lib/google-cloud-sdk/bin:$PATH"
             echo ${GOOGLE_AUTH} | base64 -i --decode > ${HOME}/gcp-key.json
             gcloud --quiet components update
