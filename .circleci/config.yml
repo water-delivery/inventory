@@ -5,16 +5,16 @@
 version: 2
 jobs:
   build:
+    working_directory: ~/app
     docker:
       # specify the version you desire here
       - image: circleci/node:7.10
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/mongo:3.4.4
-
-    working_directory: ~/repo
+      - image: google/cloud-sdk
+      - image: circleci/postgres:9.6.2
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: inventory_test
+          POSTGRES_PASSWORD: postgres
 
     steps:
       - checkout
@@ -35,5 +35,27 @@ jobs:
 
       # run tests!
       - run: yarn test
+      - setup_remote_docker
+      - run:
+          name: Configure and build images to deploy to GKE
+          command: |
+            echo ${GOOGLE_AUTH} | base64 -i --decode > ${HOME}/gcp-key.json
+            gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+            gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+            gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+            gcloud --quiet container clusters get-credentials ${GOOGLE_CLUSTER_NAME}
+            gcloud --quiet components update
+            gcloud --quiet components update kubectl
+            docker build -t gcr.io/${GOOGLE_PROJECT_ID}/inventory:build-$CIRCLE_BUILD_NUM .
+            # Using a separate tag command until Docker 1.10 is available on CircleCI, then we can use two tags in the build command above
+            docker tag gcr.io/${GOOGLE_PROJECT_ID}/inventory:build-$CIRCLE_BUILD_NUM gcr.io/${GOOGLE_PROJECT_ID}/inventory:latest
+      - deploy:
+          name: Deploy to GKE
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              ./deploy_prod.sh
+            fi
+
+
 
 
