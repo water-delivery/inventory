@@ -14,9 +14,10 @@ module.exports = {
         allowNull: false,
       },
       status: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.ENUM,
+        values: ['processing', 'dispatched', 'delivered', 'cancelled'],
+        defaultValue: 'processing',
         allowNull: false,
-        defaultValue: 20
       },
       slot: {
         type: Sequelize.INTEGER,

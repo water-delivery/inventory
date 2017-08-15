@@ -1,0 +1,8 @@
+CREATE TABLE "sellerLocation" (
+  id SERIAL PRIMARY KEY,
+  "locationId" INTEGER NOT NULL,
+  "sellerId" INTEGER NOT NULL,
+  "isActive" BOOLEAN DEFAULT true NOT NULL,
+  "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL,
+  "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL
+);

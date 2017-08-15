@@ -12,19 +12,22 @@ module.exports = (req, res, next) => {
 
   return AccessToken.findOne({
     where: { token },
+    plain: true,
     include: [{
       model: Seller,
       required: true,
-      attributes: ['firstName', 'lastName', 'avatar', 'contact', 'description', 'email', 'roles']
+      plain: true,
+      attributes: ['id', 'firstName', 'lastName', 'avatar', 'contact', 'description', 'email', 'roles']
     }]
   })
   .then(record => {
-    if (!record) res.unAuthorized(constants.ACCESS_TOKEN_INVALID);
+    if (!record) return res.unAuthorized(constants.ACCESS_TOKEN_INVALID);
     req.options.seller = record.seller;
     req.options.seller.type = record.seller.roles === 'admin'
      ? constants.USER_ADMIN
      : constants.USER_AUTHENTICATED;
-    next();
+
+    return next();
   })
   .catch(next);
 };

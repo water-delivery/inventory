@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
 
   OrderItem.associate = (models) => {
     OrderItem.belongsTo(models.order);
+    OrderItem.belongsTo(models.product);
   };
 
   return OrderItem;

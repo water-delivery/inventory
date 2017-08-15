@@ -1,0 +1,12 @@
+
+CREATE TABLE locations (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  "pinCode" INTEGER NOT NULL,
+  description VARCHAR(255),
+  city VARCHAR(255) NOT NULL,
+  "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL,
+  "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
+

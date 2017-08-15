@@ -5,9 +5,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     status: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.ENUM,
+      values: ['processing', 'dispatched', 'delivered', 'cancelled'],
+      defaultValue: 'processing',
       allowNull: false,
-      defaultValue: 20
     },
     slot: {
       type: DataTypes.INTEGER,
@@ -60,6 +61,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Order.associate = (models) => {
     Order.hasMany(models.orderItem, { as: 'items' });
+    // Order.belongsTo(models.orderItem, { as: 'items' });
   };
 
   return Order;

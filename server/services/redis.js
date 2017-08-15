@@ -5,7 +5,6 @@ const redisConfig = require('../config').redis;
 
 nconf.argv().env().file('keys.json');
 
-// const redisClient = redis.createClient(sails.config.connections.redis);
 const redisClient = redis.createClient(
   nconf.get('redisPort') || redisConfig.redisPort,
   nconf.get('redisHost') || redisConfig.redisHost,
