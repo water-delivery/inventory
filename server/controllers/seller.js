@@ -92,7 +92,7 @@ module.exports = {
 
   signin: (req, res) => {
     // All validations should be done by now!
-    const { contact, otp, meta } = req.body;
+    const { contact, otp, meta, token } = req.body;
     const criteria = {
       type: ACCOUNT_AUTHENTICATION,
       token: contact
@@ -106,14 +106,6 @@ module.exports = {
         })
         .catch(next);
       },
-      // function validatePassword(seller, next) {
-      //   return Seller.validatePassword(password, seller.password)
-      //     .then(isValid => {
-      //       if (isValid) return next(null, seller);
-      //       return res.status(401).send(PASSWORD_NOT_MATCHED);
-      //     })
-      //     .catch(next);
-      // },
       function validateOTP(user, next) {
         return redisService.findOne(criteria)
         .then(value => {
@@ -129,6 +121,7 @@ module.exports = {
           device: meta && meta.device
         })
         .then(newRecord => next(null, {
+          id: seller.id,
           firstName: seller.firstName,
           lastName: seller.lastName,
           avatar: seller.avatar,
@@ -152,6 +145,7 @@ module.exports = {
           userId: seller.id,
           userType: 'seller',
           deviceId,
+          token,
           status: 'loggedIn'
         })
         .then(logger.debug)
