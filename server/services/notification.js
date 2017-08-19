@@ -37,11 +37,26 @@ module.exports = {
     });
   },
 
+  update: (params) => {
+    // Validate here!
+    const options = {
+      method: 'PUT',
+      url: `${config.urls.api}/notification/v1/pubsub`,
+      auth: {
+        user: config.credentials.notification.username,
+        pass: config.credentials.notification.password
+      },
+      json: params
+    };
+
+    return rp(options);
+  },
+
   notify: (params) => {
     // Validate here!
     const options = {
       method: 'POST',
-      url: `${config.urls.api}/notification/v1/notify`,
+      url: `${config.urls.NOTIFICATIONS_SERVICE_HOST}/notification/v1/notify`,
       auth: {
         user: config.credentials.notification.username,
         pass: config.credentials.notification.password
