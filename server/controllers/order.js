@@ -92,7 +92,8 @@ module.exports = {
         required: true,
       }]
     })
-    .then(orders => {
+    .then(({ count, rows }) => {
+      const orders = rows;
       const userIds = orders.map(order => order.userId);
       CustomerService.getUsers(userIds)
       .then(users => {
@@ -100,13 +101,17 @@ module.exports = {
         users.forEach(user => {
           userMap[user.id] = user;
         });
-        const updatedOrders = orders;
-        updatedOrders.forEach((order, idx) => {
-          updatedOrders[idx].user = userMap[order.userId];
-          delete updatedOrders[idx].userId;
+        // const updatedOrders = orders;
+        orders.forEach((order, idx) => {
+          orders[idx].user = userMap[order.userId];
+          delete orders[idx].userId;
         });
-        return res.ok(updatedOrders);
-      });
+        return res.ok({
+          count,
+          orders
+        });
+      })
+      .catch(res.negotiate);
     })
     .catch(res.negotiate);
   },

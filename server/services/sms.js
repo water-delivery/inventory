@@ -11,7 +11,7 @@ const p = plivo.RestAPI({
 module.exports = {
   send: (text, contact, countryCode = 91) => {
     const params = {
-      src: '919441376207',
+      src: nconf.get('senderId') || plivoConfig.senderId,
       dst: `${countryCode}${contact}`, // Receiver's phone Number with country code
       text, // Your SMS Text Message - English
       // The URL to which with the status of the message is sent

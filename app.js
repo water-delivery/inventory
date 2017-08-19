@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const Router = require('./server/routes');
 const responses = require('./server/responses');
 
-const LOG_TYPE = process.env.LOG_TYPE || 'dev';
+const LOG_TYPE = process.env.LOG_TYPE || 'combined';
 
 // Set up the express app
 const app = express();

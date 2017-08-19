@@ -9,6 +9,7 @@ module.exports = {
    */
   getUsers: (ids = []) => {
     const userIds = ids.filter(id => id.isFinite(id));
+    if (userIds.length < 1) return Promise.resolve([]);
     const options = {
       method: 'GET',
       url: `${config.urls.AUTH_SERVICE_HOST}/auth/v1/users?${qs.stringify(userIds)}`,
