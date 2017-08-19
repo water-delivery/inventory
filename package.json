@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "async": "^2.5.0",
+    "basic-auth": "^1.1.0",
     "body-parser": "^1.17.2",
     "crypto": "^0.0.3",
     "express": "^4.15.3",
@@ -20,6 +21,7 @@
     "pg": "^6.4.0",
     "pg-hstore": "^2.3.2",
     "plivo": "^0.4.1",
+    "qs": "^6.5.0",
     "redis": "^2.7.1",
     "request": "^2.81.0",
     "request-promise-native": "^1.0.4",

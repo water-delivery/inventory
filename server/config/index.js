@@ -9,5 +9,15 @@ module.exports = {
   connections,
   redis,
   plivo,
-  urls
+  urls,
+  credentials: {
+    notification: {
+      username: 'arkraiders',
+      password: process.env.NOTIFICATION_SERVICE_BASIC_AUTH || 'notification'
+    },
+    auth: {
+      username: 'arkraiders',
+      password: process.env.NOTIFICATION_SERVICE_BASIC_AUTH || 'auth'
+    }
+  }
 };

@@ -3,6 +3,8 @@ const AccessToken = require('../models').accessToken;
 const async = require('async');
 const redisService = require('../services').redis;
 const smsService = require('../services').sms;
+const notificationService = require('../services').notification;
+
 const {
   generateRandomNumber,
   generateOTPTextMessage,
@@ -69,6 +71,21 @@ module.exports = {
         }
         return res.status(400).send(error);
       }
+      const { token } = req.body;
+      const { deviceId } = req.options;
+      if (token && deviceId) {
+        notificationService.subscribe({
+          userId: user.id,
+          userType: 'seller',
+          token,
+          deviceId,
+          contact,
+          firstName,
+          status: 'loggedIn'
+        })
+        .then(logger.debug)
+        .catch(logger.error);
+      }
       return res.status(201).send(user);
     });
   },
@@ -129,6 +146,17 @@ module.exports = {
       }
       // Dont wait for this response
       redisService.destroy(criteria);
+      const { deviceId } = req.options;
+      if (deviceId) {
+        notificationService.update({
+          userId: seller.id,
+          userType: 'seller',
+          deviceId,
+          status: 'loggedIn'
+        })
+        .then(logger.debug)
+        .catch(logger.error);
+      }
       return res.ok(seller);
     });
   },
@@ -139,7 +167,18 @@ module.exports = {
         token: getToken(req)
       }
     })
-    .then(res.noContent)
+    .then(affectedRows => {
+      const { deviceId } = req.options;
+      if (deviceId) {
+        notificationService.update({
+          deviceId,
+          status: 'anon'
+        })
+        .then(logger.debug)
+        .catch(logger.error);
+      }
+      return res.noContent(affectedRows);
+    })
     .catch(res.serverError);
   },
 

@@ -37,31 +37,18 @@ module.exports = {
     });
   },
 
-  notifyUser: (params) => {
+  notify: (params) => {
     // Validate here!
     const options = {
       method: 'POST',
-      url: `${config.urls.api}/notification/v1/order`,
+      url: `${config.urls.api}/notification/v1/notify`,
       auth: {
         user: config.credentials.notification.username,
         pass: config.credentials.notification.password
       },
       json: params
     };
-
-    return new Promise((resolve, reject) => {
-      request(options, (err, response, body) => {
-        const errorMessage = err || (response && response.body);
-        if (response && response.statusCode >= 400) return reject({ errorMessage, response });
-        let jsonBody = {};
-        try {
-          if (typeof body === 'string') jsonBody = JSON.parse(body);
-        } catch (e) {
-          jsonBody = null;
-        }
-        return resolve(jsonBody);
-      });
-    });
+    return rp(options);
   },
 
   /**

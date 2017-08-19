@@ -2,7 +2,8 @@ const Sequelize = require('../models').Sequelize;
 const Product = require('../models').product;
 const Order = require('../models').order;
 const OrderItem = require('../models').orderItem;
-// const NotificationService = require('../services').notification;
+const NotificationService = require('../services').notification;
+const CustomerService = require('../services').customer;
 const async = require('async');
 
 module.exports = {
@@ -91,7 +92,22 @@ module.exports = {
         required: true,
       }]
     })
-    .then(res.ok)
+    .then(orders => {
+      const userIds = orders.map(order => order.userId);
+      CustomerService.getUsers(userIds)
+      .then(users => {
+        const userMap = {};
+        users.forEach(user => {
+          userMap[user.id] = user;
+        });
+        const updatedOrders = orders;
+        updatedOrders.forEach((order, idx) => {
+          updatedOrders[idx].user = userMap[order.userId];
+          delete updatedOrders[idx].userId;
+        });
+        return res.ok(updatedOrders);
+      });
+    })
     .catch(res.negotiate);
   },
 
@@ -144,7 +160,6 @@ module.exports = {
         .then(([row]) => cb(null, row))
         .catch(cb),
     ], (err, [delivered, upcoming, pending, cancelled]) => {
-      console.log(err, delivered, upcoming, pending, cancelled);
       if (err) return res.negotiate(err);
       return res.ok({
         delivered: delivered.get('count'),
@@ -190,12 +205,14 @@ module.exports = {
 
   create: (req, res) => {
     const userId = req.options && req.options.user.id;
-    const { slot, address, paymentMethod, items, locationId, landmark,
+    const { slot, address, addressLine1, addressLine2, paymentMethod, items, locationId, landmark,
       expectedDeliveryDate, totalPrice } = req.body || {};
     return Order.create({
       userId,
       slot,
       address,
+      addressLine1,
+      addressLine2,
       landmark,
       locationId,
       paymentMethod,
@@ -210,7 +227,27 @@ module.exports = {
     })
     .then(record => {
       // Notify merchant
+      NotificationService.notify({
+        type: 'seller',
+        action: 'orderPlaced',
+        deviceId: req.options.deviceId,
+        userId: items.map(item => item.sellerId),
+        meta: {
+          address,
+          landmark
+        }
+      });
       // Notify user
+      NotificationService.notify({
+        type: 'user',
+        action: 'orderConfirmation',
+        deviceId: req.options.deviceId,
+        userId,
+        meta: {
+          address,
+          landmark
+        }
+      });
       return res.created(record);
     })
     .catch(res.negotiate);
