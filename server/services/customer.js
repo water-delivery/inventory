@@ -8,11 +8,11 @@ module.exports = {
    * @return {[type]} [description]
    */
   getUsers: (ids = []) => {
-    const userIds = ids.filter(id => id.isFinite(id));
+    const userIds = ids.filter((val, idx, arr) => arr.indexOf(val) === idx);
     if (userIds.length < 1) return Promise.resolve([]);
     const options = {
       method: 'GET',
-      url: `${config.urls.AUTH_SERVICE_HOST}/auth/v1/users?${qs.stringify(userIds)}`,
+      url: `${config.urls.AUTH_SERVICE_HOST}/auth/v1/users?${qs.stringify({ id: userIds }, { indices: false })}`,
       auth: {
         user: config.credentials.auth.username,
         pass: config.credentials.auth.password

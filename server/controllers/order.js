@@ -90,22 +90,23 @@ module.exports = {
         }],
         as: 'items',
         required: true,
+        plain: true
       }]
     })
     .then(({ count, rows }) => {
-      const orders = rows;
-      const userIds = orders.map(order => order.userId);
+      const userIds = rows.map(order => order.userId);
       CustomerService.getUsers(userIds)
       .then(users => {
         const userMap = {};
         users.forEach(user => {
           userMap[user.id] = user;
         });
-        // const updatedOrders = orders;
-        orders.forEach((order, idx) => {
-          orders[idx].user = userMap[order.userId];
-          delete orders[idx].userId;
+        const orders = rows.map(order => {
+          const obj = order.toJSON();
+          obj.user = userMap[order.userId];
+          return obj;
         });
+        console.log(orders);
         return res.ok({
           count,
           orders
@@ -260,9 +261,8 @@ module.exports = {
     .then(record => {
       // Notify merchant
       NotificationService.notify({
-        type: 'seller',
+        userType: 'seller',
         action: 'orderPlaced',
-        deviceId: req.options.deviceId,
         userId: items.map(item => item.sellerId),
         meta: {
           address,
@@ -271,7 +271,7 @@ module.exports = {
       });
       // Notify user
       NotificationService.notify({
-        type: 'user',
+        userType: 'user',
         action: 'orderConfirmation',
         deviceId: req.options.deviceId,
         userId,
