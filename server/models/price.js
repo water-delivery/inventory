@@ -1,6 +1,5 @@
-'use strict';
-module.exports = function(sequelize, DataTypes) {
-  var Price = sequelize.define('price', {
+module.exports = (sequelize, DataTypes) => {
+  const Price = sequelize.define('price', {
     sellerProductId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -25,15 +24,12 @@ module.exports = function(sequelize, DataTypes) {
     },
   }, {
     classMethods: {
-      associate: function(models) {
-        // associations can be defined here
-      }
     }
   });
 
   Price.associate = (models) => {
-    // Price.belongsTo(models.sellerProduct);
-    Price.belongsTo(models.sellerProduct, { as: 'sellerProduct' });
+    Price.belongsTo(models.sellerProduct);
+    // Price.belongsTo(models.sellerProduct, { as: 'sellerProduct' });
   };
   return Price;
 };

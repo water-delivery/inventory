@@ -1,4 +1,6 @@
+const models = require('../models');
 const Seller = require('../models').seller;
+const SellerProduct = require('../models').sellerProduct;
 const AccessToken = require('../models').accessToken;
 const async = require('async');
 const redisService = require('../services').redis;
@@ -12,7 +14,6 @@ const {
 } = require('../utils');
 const {
   CONTACT_NUMBER_VERIFICATION,
-  CONTACT_ALREADY_REGISTERED,
   ACCOUNT_AUTHENTICATION,
   SELLER_NOT_FOUND,
   // PASSWORD_NOT_MATCHED,
@@ -21,6 +22,41 @@ const {
 } = require('../constants');
 
 module.exports = {
+  products: (req, res) => {
+    const sellerId = req.params.sellerId;
+    const limit = req.query.limit || 30;
+    const skip = req.query.skip || 0;
+    if (!sellerId || isNaN(sellerId)) {
+      return res.badRequest({
+        message: 'Required param sellerId is missing or not an integer'
+      });
+    }
+    // return SellerProduct.findAll({
+    //   where: {
+    //     sellerId
+    //   },
+    //   include: [{
+    //     model: models.price,
+    //     attributes: ['sellerProductId', 'amount']
+    //   }]
+    // })
+    return models.sequelize
+      .query('SELECT sellerProducts(:sellerId, :limit, :skip); ',
+      {
+        replacements: {
+          sellerId,
+          limit,
+          skip,
+        },
+        type: models.sequelize.QueryTypes.SELECT
+      })
+      .then(results => {
+        const products = results && results[0] && results[0].sellerproducts;
+        return res.ok(products || []);
+      })
+    .catch(res.negotiate);
+  },
+
   create: (req, res) => {
     const { firstName, lastName, password, contact, description, email } = req.body;
     // All validations should be done by now!

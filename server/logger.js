@@ -35,15 +35,37 @@ const logger = new (winston.Logger)({
     new (winston.transports.Console)({
       colorize: true,
       level: 'silly',
-      json: true
-    })
+      json: true,
+    }),
+    new (winston.transports.File)({
+      filename: './logs/json.log',
+      level: 'info',
+      maxsize: 5242880, // 5MB
+      maxFiles: 5,
+      tailable: true,
+      json: false
+    }),
   ],
   levels: config.levels,
   colors: config.colors,
   exitOnError: ignoreEpipe
 });
 
+winston.handleExceptions(new winston.transports.Console({
+  colorize: true,
+  level: 'debug',
+  json: false,
+  humanReadableUnhandledException: true
+}));
+
+winston.handleExceptions(new winston.transports.File({
+  filename: './logs/uncaughtExceptions.log',
+  maxsize: 5242880, // 5MB
+  maxFiles: 5,
+}));
+
 logger.info('Winston logger configured successfully');
+
 module.exports = logger;
 
 module.exports.stream = {

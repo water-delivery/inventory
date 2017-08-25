@@ -5,6 +5,15 @@ const Price = require('../models').price;
 const async = require('async');
 
 module.exports = {
+  findAll: (req, res) =>
+    Product.findAll({
+      // where: {
+      //   verifiedAt: { $ne: null }
+      // }
+    })
+    .then(res.ok)
+    .catch(res.negotiate),
+
   find: (req, res) => {
     const offset = parseInt(req.query.skip || 0, 10);
     const limit = parseInt(req.query.limit || 20, 10);

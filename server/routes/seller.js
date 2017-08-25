@@ -25,6 +25,8 @@ router.delete('/signout', sellerController.signout);
 /* Accepts contact as params and send OTP to client */
 router.post('/seller/otp/:contact', isServiceAccount, sellerController.sendOTP);
 
+router.get('/seller/:sellerId', sellerController.products);
+
 /* Add product */
 router.post('/seller/:sellerId/addProduct',
   loadSeller,

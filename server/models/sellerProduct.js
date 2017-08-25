@@ -1,6 +1,12 @@
-'use strict';
-module.exports = function(sequelize, DataTypes) {
-  var SellerProduct = sequelize.define('sellerProduct', {
+module.exports = (sequelize, DataTypes) => {
+  const SellerProduct = sequelize.define('sellerProduct', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      allowNull: false,
+      autoIncrement: true,
+      unique: true
+    },
     productId: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -23,6 +29,7 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   SellerProduct.associate = (models) => {
+    SellerProduct.hasOne(models.price);
     SellerProduct.belongsTo(models.product);
     SellerProduct.belongsTo(models.seller);
     SellerProduct.belongsTo(models.location);

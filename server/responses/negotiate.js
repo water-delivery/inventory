@@ -16,5 +16,7 @@ module.exports = (res) => (data) => {
       fields: data.fields
     };
   }
+
+  logger.error(data);
   return res.status(status).json(message);
 };
