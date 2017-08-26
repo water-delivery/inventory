@@ -8,6 +8,28 @@ const validations = {
 };
 
 module.exports = {
+  add: (req, res) => {
+    const sellerId = req.params.sellerId;
+    const { productId, priceMap } = req.body || {};
+    const sellerProducts = [];
+    priceMap.forEach(({ amount, locationId }) => {
+      sellerProducts.push({
+        sellerId,
+        productId,
+        locationId,
+        price: {
+          amount
+        }
+      });
+    });
+
+    SellerProduct.bulkCreate(sellerProducts)
+    .then(sellerProduct => {
+      return res.created(sellerProduct);
+    })
+    .catch(res.negotiate);
+  },
+
   /**
    * Seller should be able to add an existing product to his catalog
    * @param  {[type]} req [description]

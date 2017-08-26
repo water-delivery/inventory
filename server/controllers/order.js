@@ -119,6 +119,7 @@ module.exports = {
 
   getOrderStats: (req, res) => {
     const sellerId = req.options.seller.id;
+
     async.parallel([
       // Delivered
       (cb) =>
@@ -135,7 +136,7 @@ module.exports = {
         })
         .then(([row]) => cb(null, row))
         .catch(cb),
-      // Upcoming
+      // Processing
       (cb) =>
         OrderItem.findAll({
           attributes: [[Sequelize.fn('COUNT', Sequelize.col('orderItem.id')), 'count']],
@@ -143,10 +144,7 @@ module.exports = {
           include: [{
             model: Order,
             where: {
-              status: 'processing',
-              expectedDeliveryDate: {
-                $gt: Date.now()
-              }
+              status: 'processing'
             },
             required: true,
             attributes: []
@@ -155,7 +153,7 @@ module.exports = {
         })
         .then(([row]) => cb(null, row))
         .catch(cb),
-      // Pending
+      // Dispatched
       (cb) =>
         OrderItem.findAll({
           attributes: [[Sequelize.fn('COUNT', Sequelize.col('orderItem.id')), 'count']],
@@ -163,10 +161,7 @@ module.exports = {
           include: [{
             model: Order,
             where: {
-              status: 'processing',
-              expectedDeliveryDate: {
-                $lt: Date.now()
-              }
+              status: 'dispatched'
             },
             required: true,
             attributes: []
@@ -196,8 +191,8 @@ module.exports = {
       if (err) return res.negotiate(err);
       return res.ok({
         delivered: (delivered && delivered.get('count')) || 0,
-        upcoming: (upcoming && upcoming.get('count')) || 0,
-        pending: (pending && pending.get('count')) || 0,
+        processing: (upcoming && upcoming.get('count')) || 0,
+        dispatched: (pending && pending.get('count')) || 0,
         cancelled: (cancelled && cancelled.get('count')) || 0
       });
     });

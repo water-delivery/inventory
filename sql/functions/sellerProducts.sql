@@ -20,6 +20,7 @@ BEGIN
            p.*,
            JSON_AGG(
                JSON_BUILD_OBJECT(
+                   'sellerProductId', sp.id,
                    'locationId', "locationId",
                    'price', amount
                )

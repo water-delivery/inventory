@@ -7,6 +7,7 @@ const orderCancellation = require('./orderCancellation');
 const productCreate = require('./productCreate');
 const productUpdate = require('./productUpdate');
 const addLocation = require('./addLocation');
+const addProduct = require('./addProduct');
 
 module.exports = {
   addToCart,
@@ -17,5 +18,6 @@ module.exports = {
   productUpdate,
   sellerCreate,
   update,
-  addLocation
+  addLocation,
+  addProduct,
 };
