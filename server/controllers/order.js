@@ -106,7 +106,6 @@ module.exports = {
           obj.user = userMap[order.userId];
           return obj;
         });
-        console.log(orders);
         return res.ok({
           count,
           orders
@@ -120,82 +119,35 @@ module.exports = {
   getOrderStats: (req, res) => {
     const sellerId = req.options.seller.id;
 
-    async.parallel([
-      // Delivered
-      (cb) =>
-        OrderItem.findAll({
-          attributes: [[Sequelize.fn('COUNT', Sequelize.col('orderItem.id')), 'count']],
-          where: { sellerId },
-          include: [{
-            model: Order,
-            where: { status: 'delivered' },
-            required: true,
-            attributes: []
-          }],
-          group: ['orderItem.id']
-        })
-        .then(([row]) => cb(null, row))
-        .catch(cb),
-      // Processing
-      (cb) =>
-        OrderItem.findAll({
-          attributes: [[Sequelize.fn('COUNT', Sequelize.col('orderItem.id')), 'count']],
-          where: { sellerId },
-          include: [{
-            model: Order,
-            where: {
-              status: 'processing'
-            },
-            required: true,
-            attributes: []
-          }],
-          group: ['orderItem.id']
-        })
-        .then(([row]) => cb(null, row))
-        .catch(cb),
-      // Dispatched
-      (cb) =>
-        OrderItem.findAll({
-          attributes: [[Sequelize.fn('COUNT', Sequelize.col('orderItem.id')), 'count']],
-          where: { sellerId },
-          include: [{
-            model: Order,
-            where: {
-              status: 'dispatched'
-            },
-            required: true,
-            attributes: []
-          }],
-          group: ['orderItem.id']
-        })
-        .then(([row]) => cb(null, row))
-        .catch(cb),
-      // Cancelled
-      (cb) =>
-        OrderItem.findAll({
-          attributes: [[Sequelize.fn('COUNT', Sequelize.col('orderItem.id')), 'count']],
-          where: { sellerId },
-          include: [{
-            model: Order,
-            where: {
-              status: 'cancelled'
-            },
-            required: true,
-            attributes: []
-          }],
-          group: ['orderItem.id']
-        })
-        .then(([row]) => cb(null, row))
-        .catch(cb),
-    ], (err, [delivered, upcoming, pending, cancelled]) => {
-      if (err) return res.negotiate(err);
-      return res.ok({
-        delivered: (delivered && delivered.get('count')) || 0,
-        processing: (upcoming && upcoming.get('count')) || 0,
-        dispatched: (pending && pending.get('count')) || 0,
-        cancelled: (cancelled && cancelled.get('count')) || 0
+    return OrderItem.findAll({
+      attributes: ['order.status', [Sequelize.fn('COUNT', Sequelize.col('orderItem.id')), 'count']],
+      where: { sellerId },
+      include: [{
+        model: Order,
+        where: { status: ['delivered', 'processing', 'dispatched', 'cancelled'] },
+        required: true,
+        attributes: []
+      }],
+      group: ['order.status'],
+      raw: true
+    })
+    .then(rows => {
+      const defaultStats = {
+        delivered: 0,
+        processing: 0,
+        dispatched: 0,
+        cancelled: 0
+      };
+      const stats = {};
+      if (!rows || rows.length < 1) {
+        return res.ok(defaultStats);
+      }
+      rows.forEach(row => {
+        stats[row.status] = row.count;
       });
-    });
+      return res.ok(Object.assign({}, defaultStats, stats));
+    })
+    .catch(res.negotiate);
   },
 
   findUserOrders: (req, res) => {
