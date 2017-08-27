@@ -31,4 +31,11 @@ router.put('/order/:id/cancel',
   orderController.cancel
 );
 
+/* order dispatch */
+router.put('/order/:id/dispatch',
+  loadSeller,
+  isSellerAuthenticated,
+  orderController.dispatch
+);
+
 module.exports = router;

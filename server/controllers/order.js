@@ -234,6 +234,27 @@ module.exports = {
 
   update: (req, res) => res.status(200).send({ message: 'Hello, World!!' }),
 
+  dispatch: (req, res) => {
+    const { id } = req.params;
+    Order.update({
+      status: 'dispatched',
+    }, {
+      where: {
+        id
+      },
+      // returning: true,
+      // plain: true,
+      individualHooks: true
+    })
+    .then(([affectedCount, affectedRows]) => {
+      if (affectedCount === 0) {
+        return res.notFound({ message: 'Order not found or already set to dispatch' });
+      }
+      return res.ok(affectedRows);
+    })
+    .catch(res.negotiate);
+  },
+
   cancel: (req, res) => {
     const { id } = req.params;
     const { reason } = req.body || {};
@@ -250,8 +271,7 @@ module.exports = {
           $eq: null
         }
       },
-      returning: true,
-      plain: true
+      individualHooks: true
     })
     .then(([affectedCount, affectedRows]) => {
       if (affectedCount === 0) return res.notFound({ message: 'Order not found or already cancelled' });
