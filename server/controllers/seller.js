@@ -51,7 +51,7 @@ module.exports = {
         type: models.sequelize.QueryTypes.SELECT
       })
       .then(results => {
-        const products = results && results[0] && results[0].sellerproducts;
+        const products = results && results[0] && results[0].fetchsellerproducts;
         return res.ok(products || []);
       })
     .catch(res.negotiate);

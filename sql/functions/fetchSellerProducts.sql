@@ -22,7 +22,7 @@ BEGIN
                JSON_BUILD_OBJECT(
                    'sellerProductId', sp.id,
                    'locationId', "locationId",
-                   'price', amount
+                   'amount', amount
                )
            ) AS "priceMap"
          FROM "sellerProduct" sp
