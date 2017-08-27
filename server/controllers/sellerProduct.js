@@ -1,3 +1,4 @@
+const models = require('../models');
 const Price = require('../models').price;
 const SellerProduct = require('../models').sellerProduct;
 
@@ -9,7 +10,7 @@ const validations = {
 
 module.exports = {
   add: (req, res) => {
-    const sellerId = req.params.sellerId;
+    const sellerId = req.options.seller.id;
     const { productId, priceMap } = req.body || {};
     const sellerProducts = [];
     priceMap.forEach(({ amount, locationId }) => {
@@ -23,11 +24,27 @@ module.exports = {
       });
     });
 
-    SellerProduct.bulkCreate(sellerProducts)
-    .then(sellerProduct => {
-      return res.created(sellerProduct);
-    })
-    .catch(res.negotiate);
+    return models.sequelize
+      .query('SELECT addProducts(:sellerId, :productId, :priceMap); ',
+      {
+        replacements: {
+          sellerId,
+          productId,
+          priceMap: JSON.stringify(priceMap),
+        },
+        type: models.sequelize.QueryTypes.SELECT
+      })
+      .then(results => {
+        const products = results && results[0] && results[0].addproducts;
+        return res.ok(products || []);
+      })
+      .catch(res.negotiate);
+
+    // SellerProduct.bulkCreate(sellerProducts, { individualHooks: true })
+    // .then(sellerProduct => {
+    //   return res.created(sellerProduct);
+    // })
+    // .catch(res.negotiate);
   },
 
   /**

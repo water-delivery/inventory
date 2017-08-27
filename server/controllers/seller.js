@@ -41,7 +41,7 @@ module.exports = {
     //   }]
     // })
     return models.sequelize
-      .query('SELECT sellerProducts(:sellerId, :limit, :skip); ',
+      .query('SELECT fetchSellerProducts(:sellerId, :limit, :skip); ',
       {
         replacements: {
           sellerId,

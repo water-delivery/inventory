@@ -28,7 +28,7 @@ router.post('/seller/otp/:contact', isServiceAccount, sellerController.sendOTP);
 router.get('/seller/:sellerId', sellerController.products);
 
 /* Add product with location and prices */
-router.post('/seller/:sellerId/add',
+router.post('/seller/add',
   loadSeller,
   isSellerAuthenticated,
   validations.addProduct,

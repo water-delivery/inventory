@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION sellerProducts(
+CREATE OR REPLACE FUNCTION fetchSellerProducts(
   sellerId INTEGER,
   limitTo INTEGER DEFAULT 30,
   skip INTEGER DEFAULT 0
