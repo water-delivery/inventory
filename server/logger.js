@@ -4,7 +4,7 @@ const { LOG_DIR } = require('./config').paths;
 const fs = require('fs');
 const path = require('path');
 
-if (!fs.existsSync(LOG_DIR)) {
+if (process.env.NODE_ENV !== 'production' && !fs.existsSync(LOG_DIR)) {
   // Create the directory if it does not exist
   fs.mkdirSync(LOG_DIR);
 }
