@@ -2,6 +2,7 @@
  *
 {
   slot: 16,
+  fullName: 'User name'
   address: {},
   paymentMethod: 'COD',
   expectedDeliveryDate: '',
@@ -15,7 +16,7 @@
 
 const itemKeys = ['productId', 'sellerId', 'quantity', 'price'];
 const orderKeys = [
-  'locationId', 'slot', 'address', 'paymentMethod', 'landmark',
+  'locationId', 'slot', 'fullName', 'address', 'paymentMethod', 'landmark',
   'items', 'expectedDeliveryDate', 'totalPrice'
 ];
 

@@ -185,11 +185,12 @@ module.exports = {
 
   create: (req, res) => {
     const userId = req.options && req.options.user.id;
-    const { slot, address, addressLine1, addressLine2, paymentMethod, items, locationId, landmark,
-      expectedDeliveryDate, totalPrice } = req.body || {};
+    const { slot, address, fullName, addressLine1, addressLine2, paymentMethod, items, locationId,
+      landmark, expectedDeliveryDate, totalPrice } = req.body || {};
     return Order.create({
       userId,
       slot,
+      fullName,
       address,
       addressLine1,
       addressLine2,

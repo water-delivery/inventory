@@ -24,6 +24,10 @@ module.exports = {
         defaultValue: 16,
         allowNull: false,
       },
+      fullName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       address: {
         type: Sequelize.STRING,
         allowNull: false,

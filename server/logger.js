@@ -1,5 +1,13 @@
 const winston = require('winston');
 const { notification } = require('./services');
+const { LOG_DIR } = require('./config').paths;
+const fs = require('fs');
+const path = require('path');
+
+if (!fs.existsSync(LOG_DIR)) {
+  // Create the directory if it does not exist
+  fs.mkdirSync(LOG_DIR);
+}
 
 const config = {
   levels: {
@@ -38,7 +46,7 @@ const logger = new (winston.Logger)({
       json: true,
     }),
     new (winston.transports.File)({
-      filename: './logs/json.log',
+      filename: path.join(LOG_DIR, '/inventory-all-logs.log'),
       level: 'info',
       maxsize: 5242880, // 5MB
       maxFiles: 5,
@@ -59,7 +67,7 @@ winston.handleExceptions(new winston.transports.Console({
 }));
 
 winston.handleExceptions(new winston.transports.File({
-  filename: './logs/uncaughtExceptions.log',
+  filename: path.join(LOG_DIR, '/inventory-uncaughtExceptions.log'),
   maxsize: 5242880, // 5MB
   maxFiles: 5,
 }));
