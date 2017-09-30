@@ -21,6 +21,6 @@ module.exports = {
     }
   },
   paths: {
-    LOG_DIR: process.env.LOG_DIR || 'logs'
+    LOG_DIR: './logs'
   }
 };

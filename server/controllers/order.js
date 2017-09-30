@@ -24,6 +24,7 @@ module.exports = {
   findSellerOrders: (req, res) => {
     const sellerId = req.options.seller && req.options.seller.id;
     const { locationId, status, period } = req.query || {};
+    let { fromDate, toDate } = req.query;
     const where = {};
     const currentDate = new Date();
     const dd = currentDate.getDate();
@@ -78,6 +79,17 @@ module.exports = {
       });
     }
     if (locationId) where.locationId = parseInt(locationId, 10);
+    if (fromDate) {
+      fromDate = new Date(fromDate).setHours(0, 0, 0, 0);
+      toDate = toDate || fromDate;
+      where.expectedDeliveryDate = { $gt: fromDate };
+    }
+
+    if (toDate) {
+      toDate = new Date(toDate).setHours(23, 59, 59, 999);
+      where.expectedDeliveryDate.$lt = toDate;
+    }
+
     return Order.findAndCountAll({
       where,
       include: [{

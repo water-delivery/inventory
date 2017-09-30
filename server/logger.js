@@ -1,13 +1,13 @@
 const winston = require('winston');
 const { notification } = require('./services');
 const { LOG_DIR } = require('./config').paths;
-const fs = require('fs');
+// const fs = require('fs');
 const path = require('path');
 
-if (process.env.NODE_ENV !== 'production' && !fs.existsSync(LOG_DIR)) {
-  // Create the directory if it does not exist
-  fs.mkdirSync(LOG_DIR);
-}
+// if (process.env.NODE_ENV !== 'production' && !fs.existsSync(LOG_DIR)) {
+//   // Create the directory if it does not exist
+//   fs.mkdirSync(LOG_DIR);
+// }
 
 const config = {
   levels: {

@@ -16,7 +16,7 @@
 
 const itemKeys = ['productId', 'sellerId', 'quantity', 'price'];
 const orderKeys = [
-  'locationId', 'slot', 'fullName', 'address', 'paymentMethod', 'landmark',
+  'locationId', 'slot', 'fullName', 'address', 'paymentMethod',
   'items', 'expectedDeliveryDate', 'totalPrice'
 ];
 

@@ -212,6 +212,25 @@ module.exports = {
     .catch(res.serverError);
   },
 
+  update: (req, res) => {
+    const sellerId = req.options.seller.id;
+    const { firstName, lastName, avatar, description, email } = req.body || {};
+    Seller.update({
+      firstName,
+      lastName,
+      avatar,
+      description,
+      email
+    }, {
+      where: {
+        id: sellerId
+      },
+      individualHooks: true
+    })
+    .then(([, affectedRows]) => res.ok(affectedRows[0]))
+    .catch(res.negotiate);
+  },
+
   /**
    * TODO: This can moved to notifications service once its up
    * Sends a One Time Password (OTP) for validating contact info

@@ -59,4 +59,7 @@ router.put('/seller/:sellerId/updatePrice',
   sellerProductController.updatePrice
 );
 
+/* Update seller information */
+router.put('/seller', loadSeller, isSellerAuthenticated, sellerController.update);
+
 module.exports = router;
