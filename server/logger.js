@@ -46,7 +46,7 @@ const logger = new (winston.Logger)({
       json: true,
     }),
     new (winston.transports.File)({
-      filename: path.join(LOG_DIR, '/inventory-all-logs.log'),
+      filename: path.join(LOG_DIR, 'inventory-all-logs.log'),
       level: 'info',
       maxsize: 5242880, // 5MB
       maxFiles: 5,
