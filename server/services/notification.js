@@ -14,7 +14,7 @@ module.exports = {
     // Validate here!
     const options = {
       method: 'POST',
-      url: `${config.urls.api}/notification/v1/sms`,
+      url: `${config.urls.NOTIFICATIONS_SERVICE_HOST}/notification/v1/sms`,
       auth: {
         user: config.credentials.notification.username,
         pass: config.credentials.notification.password
@@ -41,7 +41,7 @@ module.exports = {
     // Validate here!
     const options = {
       method: 'PUT',
-      url: `${config.urls.api}/notification/v1/pubsub`,
+      url: `${config.urls.NOTIFICATIONS_SERVICE_HOST}/notification/v1/pubsub`,
       auth: {
         user: config.credentials.notification.username,
         pass: config.credentials.notification.password
@@ -74,7 +74,7 @@ module.exports = {
     // Validate here!
     const options = {
       method: 'POST',
-      url: `${config.urls.api}/notification/v1/logger/crash`,
+      url: `${config.urls.NOTIFICATIONS_SERVICE_HOST}/notification/v1/logger/crash`,
       auth: {
         user: config.credentials.notification.username,
         pass: config.credentials.notification.password

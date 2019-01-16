@@ -1,5 +1,5 @@
 {
-  "name": "ProjectX",
+  "name": "inventory-service",
   "version": "1.0.0",
   "description": "Water Delivery App",
   "main": "server.js",
